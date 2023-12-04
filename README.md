@@ -64,6 +64,9 @@ event.
 
 ### Example
 
+Here's an example how the changes between tags are used to create a release
+description:
+
 ```yml
 on:
   push:
@@ -82,12 +85,12 @@ jobs:
         id: changes
         uses: simbo/changes-between-tags-action@v1
 
-      - name: 📣 Output collected Data
-        run: |
-          echo "tag: ${{ steps.changes.outputs.tag }}"
-          echo "ref: ${{ steps.changes.outputs.ref }}"
-          echo "changes:"
-          echo "${{ steps.changes.outputs.changes }}"
+      - name: 🎁 Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          name: Release ${{ steps.changes.outputs.tag }}
+          body: |
+            ${{ steps.changes.outputs.changes }}
 ```
 
 ## License
