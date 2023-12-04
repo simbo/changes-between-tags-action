@@ -13,26 +13,24 @@ inputs:
     default: '^v[0-9]+\.[0-9]+\.[0-9]+$'
 
   validate-tag:
-    description:
-      whether to check if the determined latest tag is the same tag that
-      triggered the workflow
+    description: whether to check if the determined latest tag is the same tag that triggered the workflow
     required: false
-    default: "true"
+    default: 'true'
 
   include-tag-commit:
     description: whether to include the commit with the current tag
     required: false
-    default: "true"
+    default: 'true'
 
   include-hashes:
     description: whether or not each commit should be prefixed with its hash
     required: false
-    default: "true"
+    default: 'true'
 
   line-prefix:
     description: prefix to add to every listed commit
     required: false
-    default: "- "
+    default: '- '
 
 outputs:
   changes:
