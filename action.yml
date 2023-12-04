@@ -51,6 +51,9 @@ runs:
     - id: changes-between-tags
       shell: bash
       run: |
+        # start log grouping
+        echo "::group::Collecting Changes between Tags..."
+
         # set options from inputs
         tagPattern="${{ inputs.tag-pattern }}"
         validateTag="${{ inputs.validate-tag }}"
@@ -124,5 +127,14 @@ runs:
           echo "$changes"
           echo "EOF"
           echo "tag=${latestTag}"
-          echo "ref=${gitRef}"
+          echo "ref=${gitRef:-N/A}"
         } >> "$GITHUB_OUTPUT"
+
+        # log the results
+        echo "tag: ${latestTag}"
+        echo "ref: ${gitRef:-N/A}"
+        echo "changes:"
+        echo "$changes"
+
+        # end log grouping
+        echo "::endgroup::"
