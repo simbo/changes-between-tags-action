@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 🛎 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📋 Collect Changes
+        id: changes
+        uses: .
+        with:
+          validate-tag: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v') && 'true' || 'false' }}
+
+      - name: 🏷️ Create or Move Tags for Major and Minor Versions
+        if: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v') }}
+        uses: simbo/action-semver-release-action@v1
+
+      - name: 🎁 Create GitHub Release
+        if: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v') }}
+        uses: ncipollo/release-action@v1
+        with:
+          name: Release ${{ steps.changes.outputs.tag }}
+          body: |
+            ${{ steps.changes.outputs.changes }}
