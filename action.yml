@@ -76,7 +76,7 @@ runs:
         countTags=$(echo "$tags" | wc -l)
 
         # exit with error if no tags are found
-        if [[ $countTags -le 0 ]]; then
+        if [[ "$tags" == "" || $countTags -le 0 ]]; then
           echo "::error title=no tags found::changes-between-tags action could not find any tags to work with"
           exit 1
         fi
