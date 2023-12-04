@@ -23,7 +23,7 @@ jobs:
 
       - name: 📋 Collect Changes
         id: changes
-        uses: .
+        uses: ./action.yml
         with:
           validate-tag: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v') && 'true' || 'false' }}
 
