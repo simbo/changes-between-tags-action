@@ -76,7 +76,7 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-22.04
-
+    permissions: write-all
     steps:
       - name: 🛎 Checkout
         uses: actions/checkout@v4
