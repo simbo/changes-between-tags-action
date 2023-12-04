@@ -46,13 +46,13 @@ event.
 
 ### Inputs
 
-| Name                 | Description                                                                               | Required | Default                       |
-| -------------------- | ----------------------------------------------------------------------------------------- | -------- | ----------------------------- |
-| `tag-pattern`        | the regex pattern to filter tags                                                          | No       | `'^v[0-9]+\.[0-9]+\.[0-9]+$'` |
-| `validate-tag`       | whether to check if the determined latest tag is the same tag that triggered the workflow | No       | `'true'`                      |
-| `include-tag-commit` | whether to include the commit with the current tag                                        | No       | `'true'`                      |
-| `include-hashes`     | whether or not each commit message should be prefixed with the corresponding hash         | No       | `'true'`                      |
-| `line-prefix`        | the prefix to add to every listed commit                                                  | No       | `'- '`                        |
+| Name                 | Description                                                                               | Required | Default                        |
+| -------------------- | ----------------------------------------------------------------------------------------- | -------- | ------------------------------ |
+| `tag-pattern`        | the regex pattern to filter tags                                                          | No       | `'^v?[0-9]+\.[0-9]+\.[0-9]+$'` |
+| `validate-tag`       | whether to check if the determined latest tag is the same tag that triggered the workflow | No       | `'true'`                       |
+| `include-tag-commit` | whether to include the commit with the current tag                                        | No       | `'true'`                       |
+| `include-hashes`     | whether or not each commit message should be prefixed with the corresponding hash         | No       | `'true'`                       |
+| `line-prefix`        | the prefix to add to every listed commit                                                  | No       | `'- '`                         |
 
 ### Outputs
 

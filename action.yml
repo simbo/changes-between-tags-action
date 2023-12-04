@@ -10,7 +10,7 @@ inputs:
   tag-pattern:
     description: the regex pattern to filter tags
     required: false
-    default: '^v[0-9]+\.[0-9]+\.[0-9]+$'
+    default: '^v?[0-9]+\.[0-9]+\.[0-9]+$'
 
   validate-tag:
     description: whether to check if the determined latest tag is the same tag that triggered the workflow
