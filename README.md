@@ -33,6 +33,11 @@ from the origin remote.
 A regex pattern `tag-pattern` can be defined to filter tags. Matching tags will
 be sorted and the latest two tags are taken for comparison.
 
+The action will fail if no matching tags are found.
+
+If only one matching tag is found, the changes from the initial commit to this
+tag will be collected.
+
 The action is meant to be run on a
 [`push:tags`](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-of-specific-tags-occurs)
 event.
@@ -73,7 +78,7 @@ jobs:
       - name: 🛎 Checkout
         uses: actions/checkout@v4
 
-      - name: 📋 Get Commits since last Release
+      - name: 📋 Get Changes between Tags
         id: changes
         uses: simbo/changes-between-tags-action@v1
 
