@@ -56,8 +56,8 @@ runs:
         # start log grouping
         echo "::group::Collecting Changes between Tags..."
 
-        # output commands and exit on any fail
-        set -ex
+        # output commands and exit on any failure
+        # set -ex
 
         # set options from inputs
         tagPattern="${{ inputs.tag-pattern }}"
