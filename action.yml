@@ -1,0 +1,128 @@
+name: Changes between Tags
+description: A GitHub action to collect all commit messages between two tags.
+author: Simon Lepel <simbo@simbo.de> (https://simbo.de)
+
+branding:
+  icon: list
+  color: gray-dark
+
+inputs:
+  tag-pattern:
+    description: the regex pattern to filter tags
+    required: false
+    default: '^v[0-9]+\.[0-9]+\.[0-9]+$'
+
+  validate-tag:
+    description:
+      whether to check if the determined latest tag is the same tag that
+      triggered the workflow
+    required: false
+    default: "true"
+
+  include-tag-commit:
+    description: whether to include the commit with the current tag
+    required: false
+    default: "true"
+
+  include-hashes:
+    description: whether or not each commit should be prefixed with its hash
+    required: false
+    default: "true"
+
+  line-prefix:
+    description: prefix to add to every listed commit
+    required: false
+    default: "- "
+
+outputs:
+  changes:
+    description: collected changes as multiline string
+    value: ${{ steps.changes-between-tags.outputs.changes }}
+  tag:
+    description: the current/latest tag that was used for comparison
+    value: ${{ steps.changes-between-tags.outputs.tag }}
+  ref:
+    description: the git reference that the tag was compared with
+    value: ${{ steps.changes-between-tags.outputs.ref }}
+
+runs:
+  using: composite
+  steps:
+    - id: changes-between-tags
+      shell: bash
+      run: |
+        # set options from inputs
+        tagPattern="${{ inputs.tag-pattern }}"
+        validateTag="${{ inputs.validate-tag }}"
+        includeTagCommit="${{ inputs.include-tag-commit }}"
+        includeHashes="${{ inputs.include-hashes }}"
+        linePrefix="${{ inputs.line-prefix }}"
+
+        # fetch all tags from origin
+        git fetch origin --tags
+
+        # get tags that match the pattern and sort them using version sorting in reverse
+        tags=$(git tag -l | grep -E "$tagPattern" | sort -Vr)
+
+        # count the found tags
+        countTags=$(echo "$tags" | wc -l)
+
+        # exit with error if no tags are found
+        if [[ $countTags -le 0 ]]; then
+          echo "::error title=no tags found::changes-between-tags action could not find any tags to work with"
+          exit 1
+        fi
+
+        # take the first tag as latestTag
+        latestTag=$(echo "$tags" | sed -n '1 p')
+
+        # exit if the latest tag does not match the git ref that triggered the workflow
+        if [[ "$validateTag" == "true" && ( "$GITHUB_REF" != "refs/tags/"* || "$GITHUB_REF_NAME" != "$latestTag" ) ]]; then
+          echo "::error title=tags not matching::the latest tag determined by the changes-between-tags action does not match the git ref that triggered the workflow"
+          exit 1
+        fi
+
+        # if there's more than one tag
+        if [[ $countTags -gt 1 ]]; then
+          # take the second tag as git reference
+          gitRef=$(echo "$tags" | sed -n '2 p')
+        else
+          # otherwise don't set a git ref (get all changes)
+          gitRef=""
+        fi
+
+        # if a git ref is set
+        if [[ "$gitRef" != "" ]]; then
+          # set range between latest tag and git ref
+          range="$gitRef...$latestTag"
+        else
+          # set range until latest tag
+          range="$latestTag"
+        fi
+
+        # get changes for range
+        changes=$(git log --pretty=format:%h\ %s --no-decorate "$range")
+
+        # optionally remove the commit message tagged with the latest tag
+        if [[ "$includeTagCommit" != "true" ]]; then
+          changes=$(echo "$changes" | tail -n +2)
+        fi
+
+        # optionally remove commit hash prefix from every commit message
+        if [[ "$includeHashes" != "true" ]]; then
+          changes="$(echo "$changes" | sed -r -e 's/^[[:alnum:]]+[[:space:]]+//')"
+        fi
+
+        # if set, add a prefix to every commit message
+        if [[ "$linePrefix" != "" ]]; then
+          changes="$(echo "$changes" | sed -r -e "s/^/$linePrefix/")"
+        fi
+
+        # set outputs
+        {
+          echo "changes<<EOF"
+          echo "$changes"
+          echo "EOF"
+          echo "tag=${latestTag}"
+          echo "ref=${gitRef}"
+        } >> "$GITHUB_OUTPUT"
