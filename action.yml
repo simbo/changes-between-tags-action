@@ -65,7 +65,7 @@ runs:
         linePrefix="${{ inputs.line-prefix }}"
 
         # fetch all tags from origin
-        git fetch origin --tags
+        git fetch origin --tags --force
 
         # get tags that match the pattern and sort them using version sorting in reverse
         tags=$(git tag -l | grep -E "$tagPattern" | sort -Vr || echo "")
