@@ -70,7 +70,7 @@ runs:
         git fetch origin --tags
 
         # get tags that match the pattern and sort them using version sorting in reverse
-        tags=$(git tag -l | grep -E "$tagPattern" | sort -Vr)
+        tags=$(git tag -l | grep -E "$tagPattern" | sort -Vr || echo "")
 
         # count the found tags
         countTags=$(echo "$tags" | wc -l)
