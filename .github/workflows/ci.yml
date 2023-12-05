@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: 🛎 Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 📋 Collect Changes
         id: changes
@@ -31,11 +33,5 @@ jobs:
       - name: 🏷️ Create or Move Tags for Major and Minor Versions
         if: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v') }}
         uses: simbo/action-semver-release-action@v1
-
-      - name: 🎁 Create GitHub Release
-        if: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v') }}
-        uses: ncipollo/release-action@v1
         with:
-          name: Release ${{ steps.changes.outputs.tag }}
-          body: |
-            ${{ steps.changes.outputs.changes }}
+          release-body: ${{ steps.changes.outputs.changes }}
